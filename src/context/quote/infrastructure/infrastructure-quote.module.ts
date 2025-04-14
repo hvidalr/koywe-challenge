@@ -11,10 +11,22 @@ import { QuoteGetterFacade } from '../application/quote-getter.facade';
     MongooseModule.forFeature([{ name: 'quotes', schema: QuoteSchema }]),
   ],
   providers: [
+    QuoteCreatorFacade,
     QuoteGetterFacade,
+    {
+      provide: 'ExchangeRateRepository',
+      useClass: CryptoMktRepository,
+    },
+    {
+      provide: 'QuotePersistRepository',
+      useClass: QuoteStorageMongoRepository,
+    },
   ],
   exports: [
+    QuoteCreatorFacade,
     QuoteGetterFacade,
+    'ExchangeRateRepository',
+    'QuotePersistRepository',
   ],
 })
 

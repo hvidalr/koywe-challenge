@@ -7,6 +7,6 @@ import { QuoteGetterFacade } from 'src/context/quote/application/quote-getter.fa
 @Module({
   imports: [InfrastructureQuoteModule],
   controllers: [QuoteController],
-  providers: [QuoteGetterFacade],
+  providers: [QuoteCreatorFacade, QuoteGetterFacade],
 })
 export class QuoteModule {}
