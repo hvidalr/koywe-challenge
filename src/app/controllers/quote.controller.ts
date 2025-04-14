@@ -15,6 +15,13 @@ export class QuoteController {
   ) {}
 
   @UseGuards(AuthGuard('jwt'))
+  @Post('/')
+  async createQuote(@Body() body: ConvertCurrencyDto): Promise<Quote> {
+    const { from, to, amount } = body;
+    return this.quoteCreatorFacade.run(from, to, amount);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async getQuote(@Param('id') id: string): Promise<Quote> {
     return this.quoteGetterFacade.run(id);
