@@ -16,8 +16,7 @@ export class QuoteController {
 
   @UseGuards(AuthGuard('jwt'))
   @Post('/')
-  async createQuote(@Body() body: ConvertCurrencyDto): Promise<Quote> {
-    const { from, to, amount } = body;
+  async createQuote(@Body() {from, to, amount}: ConvertCurrencyDto): Promise<Quote> {
     return this.quoteCreatorFacade.run(from, to, amount);
   }
 

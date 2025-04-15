@@ -4,7 +4,8 @@ import { PassportModule } from '@nestjs/passport';
 import config from 'src/app/config';
 import { AuthController } from 'src/app/controllers/auth.controller';
 import { JwtStrategy } from 'src/app/middlewares/auth/jwt.strategy';
-import { AuthService } from 'src/context/auth/application/auth.service';
+import { AuthLoginFacade } from 'src/context/auth/application/auth-login.facade';
+import { AuthRegisterFacade } from 'src/context/auth/application/auth-register.facade';
 import { InfrastructureUserModule } from 'src/context/auth/infrastructure/infrastructure-user.module';
 
 @Module({
@@ -16,8 +17,8 @@ import { InfrastructureUserModule } from 'src/context/auth/infrastructure/infras
     }),
     InfrastructureUserModule,
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthLoginFacade, AuthRegisterFacade, JwtStrategy],
   controllers: [AuthController],
-  exports: [AuthService],
+  exports: [AuthLoginFacade, AuthRegisterFacade],
 })
 export class AuthModule {}

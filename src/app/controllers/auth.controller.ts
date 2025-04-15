@@ -1,21 +1,23 @@
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
-import { AuthService } from 'src/context/auth/application/auth.service';
+import { Body, Controller, HttpCode, Post } from '@nestjs/common';
+import { AuthLoginFacade } from 'src/context/auth/application/auth-login.facade';
 import { LoginDto } from '../middlewares/dto/login.dto copy';
+import { AuthRegisterFacade } from 'src/context/auth/application/auth-register.facade';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authLoginFacade: AuthLoginFacade,
+    private readonly authRegisterFacade: AuthRegisterFacade,
+  ) {}
 
   @Post('register')
-  async register(@Body() body: LoginDto) {
-    await this.authService.register(body.username, body.password);
-    return { message: 'User registered' };
+  async register(@Body() { username, password }: LoginDto) {
+    return await this.authRegisterFacade.run(username, password);
   }
 
   @Post('login')
-  async login(@Body() body: LoginDto) {
-    const user = await this.authService.validateUser(body.username, body.password);
-    if (!user) throw new UnauthorizedException('Invalid credentials');
-    return this.authService.login(user);
+  @HttpCode(200)
+  async login(@Body() { username, password }: LoginDto) {
+    return await this.authLoginFacade.run(username, password);
   }
 }
