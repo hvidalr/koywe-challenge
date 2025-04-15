@@ -1,238 +1,140 @@
-# 🚀 Prueba Técnica: API de Cotización de Divisas (Fiat ⇄ Crypto) con NestJS
+# 🚀 Koywe Challenge
 
-Bienvenido a este desafío para crear una **API** moderna en **NestJS** para convertir divisas fiat y criptomonedas. ¡Prepárate para demostrar tus habilidades y buenas prácticas de desarrollo!
-
----
-
-## 📚 Objetivo
-
-Desarrollar una aplicación back-end en NestJS que exponga dos endpoints REST para realizar conversiones entre monedas fiat y criptomonedas. La solución debe incluir:
-
-- Arquitectura modular y escalable.
-- Seguridad básica con autenticación.
-- Consulta en tiempo real a un proveedor de precios (por ejemplo, la API de Cryptomkt) o su simulación.
-- Documentación clara y concisa(deseable).
-- Pruebas unitarias y de integración (opcional).
-
-> **💡 Nota sobre la Estructura del Proyecto:** 
-> Este repositorio proporciona una estructura base que implementa el patrón Facade junto con las prácticas recomendadas de NestJS. Esta estructura es una guía para ayudarte a comenzar, pero no es un requisito estricto. Te animamos a:
-> - Adaptar la estructura según tu experiencia y criterio
-> - Implementar patrones alternativos si los consideras más apropiados
-> - Reorganizar los módulos de la manera que mejor se ajuste a tu solución
-> 
-> Lo fundamental es que tu implementación mantenga los principios de código limpio, modular y mantenible.
+Aplicación construida con [NestJS](https://nestjs.com/) como parte del desafío técnico de Koywe. Esta API permite generar y obtener cotizaciones (`quote`) y manejarlas de forma segura usando autenticación con JWT.
 
 ---
 
-## 🔍 Requerimientos Funcionales
+## 🛠️ Instrucciones para levantar la aplicación localmente
 
-### 1️⃣ Endpoint para Crear una Cotización
+1. **Clona el repositorio**
+   ```bash
+   git clone https://github.com/hvidalr/koywe-challenge.git
+   cd koywe-challenge
+   ```
 
-- **Método y Ruta:** `POST /quote`
-- **Cuerpo de la Solicitud (JSON):**
-  
-  ```json
-  {
-    "amount": 1000000,
-    "from": "ARS",
-    "to": "ETH"
-  }
-  ```
+2. **Instala las dependencias**
+   ```bash
+   npm install
+   ```
 
-- **Campos:**
-  - **amount:** Monto a convertir.
-  - **from:** Código de la moneda origen (Ej.: ARS, CLP, MXN, USDC, BTC, ETH).
-  - **to:** Código de la moneda destino (Ej.: ETH, USDC, CLP, USD, ARS).
+3. **Crea un archivo `.env`** en la raíz del proyecto basado en el archivo de ejemplo `.env.example`.
 
-- **Proceso:**
-  1. **Consulta a Proveedor de Precios:**  
-     Obtener el valor de `rate` en tiempo real consultando una API externa, por ejemplo:
-     ```
-     https://api.exchange.cryptomkt.com/api/3/public/price/rate?from={to}&to={from}
-     ```
-     > **Importante:** Si no se puede integrar la API real, simula la respuesta y documenta en el README cómo se realizaría la consulta real.
-  
-  2. **Cálculo:**  
-     Calcular el `convertedAmount` multiplicando el `amount` por el `rate` obtenido.
-  
-  3. **Gestión de Timestamps e Identificador:**  
-     - Generar un ID único para la cotización.
-     - Registrar el timestamp de generación.
-     - Establecer un `expiresAt` (por ejemplo, 5 minutos después de la creación).
-  
-  4. **Registro de la Cotización:**  
-     Almacenar en la base de datos la siguiente información:
-     - Identificador único.
-     - Valores de `from`, `to` y `amount`.
-     - Tasa de conversión (`rate`) y `convertedAmount`.
-     - Timestamp de creación y `expiresAt`.
+4. **Ejecuta la aplicación en modo desarrollo**
+   ```bash
+   npm run start:dev
+   ```
 
-- **Respuesta Esperada: ARS -> ETH**
-
-  ```json
-  {
-    "id": "a1b2c3d4",
-    "from": "ARS",
-    "to": "ETH",
-    "amount": 1000000,
-    "rate": 0.0000023,
-    "convertedAmount": 2.3,
-    "timestamp": "2025-02-03T12:00:00Z",
-    "expiresAt": "2025-02-03T12:05:00Z"
-  }
-  ```
-
-  **Respuesta Esperada: ETH -> ARS**
-
-  ```json
-  {
-  "id": "d4c3b2a1",
-  "from": "ETH",
-  "to": "ARS",
-  "amount": 1,
-  "rate": 434782.61,
-  "convertedAmount": 434782.61,
-  "timestamp": "2025-02-03T12:00:00Z",
-  "expiresAt": "2025-02-03T12:05:00Z"
-  }
-  ```
+   Esto levantará el servidor en el puerto definido por la variable de entorno `PORT` (por defecto `3000`).
 
 ---
 
-### 2️⃣ Endpoint para Obtener una Cotización
+## 🧪 Cómo ejecutar las pruebas
 
-- **Método y Ruta:** `GET /quote/:id`
-- **Proceso:**
-  - Recuperar la cotización desde la base de datos utilizando el ID proporcionado.
-  - Validar que la cotización aún sea válida (es decir, que el timestamp actual no supere el valor de `expiresAt`).
-- **Respuesta:**
-  - Si la cotización existe y es válida, devolver la información completa en formato JSON (similar al ejemplo anterior).
-  - En caso contrario, responder con el código HTTP adecuado (por ejemplo, `404 Not Found`).
+La configuración de pruebas se encuentra en el archivo raíz `jest.config.ts`. Puedes ejecutar las pruebas unitarias con:
 
----
+```bash
+npm run test
+```
 
-### 3️⃣ Registro de Cotizaciones
-
-Cada cotización generada debe registrarse en la base de datos con los siguientes datos:
-
-- **ID único** de la cotización.
-- Valores de `from`, `to` y `amount`.
-- Tasa de conversión (`rate`) y monto convertido (`convertedAmount`).
-- Timestamps de creación y `expiresAt`.
-
-#### Opciones de Base de Datos:
-- **Opción 1:** MongoDB con Mongoose.
-- **Opción 2:** PostgreSQL con Prisma.
-
-> **Selecciona** la opción con la que te sientas más cómodo y **documenta** tu elección en este README.
+Otras opciones:
+- `npm run test:watch` → Ejecuta pruebas en modo observador.
+- `npm run test:cov` → Genera reporte de cobertura.
+- `npm run test:e2e` → Ejecuta pruebas end-to-end (para las que exista su correcta definición).
 
 ---
 
-## 🔒 Seguridad
+## 🗄️ Base de datos
 
-### Autenticación
-
-- **Protege** ambos endpoints implementando autenticación con JWT (JSON Web Tokens).
-- Utiliza un **Guard** o middleware en NestJS para verificar la presencia y validez del JWT en el header `Authorization`.
-- Implementa endpoints para registro y login que generen y validen los JWT.
-- En caso de no proporcionar un token o ser inválido, la API debe retornar un error `401 Unauthorized`.
+- Se eligió **MongoDB** como base de datos principal.
+- El acceso se configura mediante la variable `MONGO_CONNECTION`.
+- Compatible tanto con Mongo Atlas como con instancias locales.
 
 ---
 
-## 💻 Front-End (Opcional)
+### 🔄 Conexión alternativa a MongoDB
 
-### Objetivo
+La conexión a la base de datos está pensada para un cluster `M0` de Mongo Atlas. Si no ha habido actividad en el cluster, puede tardar en reconectar o incluso fallar. También puedes usar una conexión local como alternativa:
 
-Desarrolla una interfaz utilizando Next.js que permita:
-
-- **Crear Cotizaciones:**  
-  Un formulario donde el usuario ingrese `amount`, `from` y `to` para generar una cotización.
-  
-- **Consultar Cotizaciones:**  
-  Un campo para ingresar el ID de la cotización y mostrar sus detalles.
-
-#### Consideraciones:
-- La aplicación debe ser desarrollada utilizando Next.js
-- La interfaz debe integrarse con la API desarrollada
-- Su desarrollo es opcional para la aprobación de esta prueba
+```env
+MONGO_CONNECTION=mongodb://localhost:27017/koywe-challenge
+```
 
 ---
 
-## 🤖 Uso de Inteligencia Artificial
+## 🔐 Seguridad
 
-Se permite y fomenta el uso de herramientas de IA (como ChatGPT, GitHub Copilot, etc.) para el desarrollo de esta prueba técnica. Sin embargo, se requiere:
+### Autenticación con JWT
 
-- Mencionar en el README qué herramientas de IA se utilizaron
-- Explicar brevemente cómo se aprovecharon estas herramientas
-- Asegurarse de entender y poder explicar todo el código generado por IA
-- Mantener un balance entre el código generado por IA y el desarrollo propio
+Ambos endpoints están protegidos mediante autenticación basada en JWT.
 
-El uso de IA debe ser un complemento para mejorar la eficiencia del desarrollo, no un sustituto del entendimiento técnico.
+- 🔒 Se utiliza un **Guard** de NestJS para validar el token en el header `Authorization`.
+- 🔑 Endpoints disponibles:
+  - `POST /auth/register` → Registra un nuevo usuario.
+  - `POST /auth/login` → Devuelve un token válido al autenticar.
 
----
-
-## 🛠 Requerimientos de Calidad y Herramientas
-
-- **Testing:**  
-  Implementa pruebas unitarias básicas para la lógica de negocio (por ejemplo, en los servicios que gestionan las cotizaciones).
-
-- **Linter y Formateo:**  
-  Utiliza ESLint y Prettier para mantener un código limpio, legible y coherente.
-
-- **Documentación:**  
-  Este archivo README.md debe incluir:
-  - Instrucciones para levantar la aplicación localmente (o con Docker, si decides implementarlo).
-  - Cómo ejecutar las pruebas.
-  - Detalles de las variables de entorno (incluye un archivo de ejemplo, como `.env.example`).
-  - La elección de la base de datos y cualquier configuración especial.
-
-- **Dockerización (Opcional):**  
-  Si dockerizas la aplicación, incluye un `Dockerfile` y/o `docker-compose.yml` con instrucciones para levantar tanto la aplicación como la base de datos en contenedores.
+**Comportamiento esperado:**
+- ❌ Si no se envía un token.
+- ❌ Si el token es inválido o expiró.
+➡️ La API responde con `401 Unauthorized`.
 
 ---
 
-## 🎯 Expectativas del Desarrollador
+## 🧪 Testing
 
-- **Calidad y Claridad:**  
-  - Código modular, limpio y bien documentado.
-  - Fácil mantenimiento y comprensión del mismo.
-  
-- **Buenas Prácticas:**  
-  - Uso correcto de NestJS e inyección de dependencias.
-  - Aplicación de principios SOLID.
-  - Implementación del patrón Facade para centralizar la lógica de negocio.
-  
-- **Seguridad y Testing:**  
-  - Autenticación efectiva.
-  - Pruebas unitarias y de integración para respaldar la funcionalidad.
-  
-- **Documentación Completa:**  
-  Asegúrate de que el README ofrezca toda la información necesaria para levantar la aplicación, configurar variables de entorno y ejecutar pruebas.
-
-- **Front-End (Opcional):**  
-  Su integración con el back-end deberá ser funcional y demostrar la capacidad de crear y consultar cotizaciones.
+- ✅ Las pruebas unitarias cubren los **casos de uso del dominio (Facade)**.
+- 🧪 Se utiliza `jest` como framework de pruebas.
 
 ---
 
-## 📦 Instrucciones de Entrega
+## 🏗️ Arquitectura
 
-- **Repositorio:**
-  - Antes de comenzar, haz un fork de este repositorio para que tu solución se base en esta plantilla.
-  - El código debe subirse a un repositorio **público** en GitHub.
-  - Se te proporcionará un correo electrónico al cual deberás dar acceso como colaborador del repositorio para la revisión del código.
-  - Alternativamente, puedes enviar un archivo ZIP que incluya la carpeta `.git` para mantener el historial de commits.
-  
-  > **Nota:** Si eliges la opción del ZIP, asegúrate de que el archivo incluya todo el historial de Git para poder evaluar la evolución del desarrollo.
+### 🛠️ Arquitectura Hexagonal y DDD
 
-- **README.md:**  
-  - Incluir instrucciones detalladas para levantar la aplicación (back-end y front-end si aplica).
-  - Explicar cómo ejecutar las pruebas.
-  - Documentar la configuración de variables de entorno y otra información relevante.
-  - Si implementas Docker, describe los pasos para levantar los contenedores.
+Este proyecto sigue el enfoque de **arquitectura hexagonal** y el principio de **Domain-Driven Design (DDD)** para garantizar una separación de responsabilidades clara y modular. Se estructura en capas que definen las fronteras entre el dominio central (logística de negocio), la infraestructura (acceso a datos y APIs externas) y las interfaces (controladores y comunicación con el mundo exterior).
 
-- **Código y Documentación:**  
-  Verifica que el código compile correctamente y la aplicación funcione sin errores. Asegúrate de que este README sea claro, completo y atractivo para otros desarrolladores.
+La **capa de dominio** incluye todas las reglas y entidades de negocio, mientras que la **capa de infraestructura** maneja las conexiones externas (como MongoDB o servicios de terceros). Finalmente, la **capa de interfaz** expone la lógica a través de endpoints API.
+
+### 🔑 Uso de Facades
+
+La aplicación hace uso del patrón **Facade** para simplificar la interacción con la lógica compleja del dominio. Esto permite que las capas externas se comuniquen con la lógica de negocio de manera más sencilla, sin tener que lidiar con la complejidad interna del sistema.
 
 ---
 
-### 🚀 ¡Buena suerte y a codificar! 👩‍💻👨‍💻
+## 🤖 Uso de IA
+
+Durante el desarrollo de este proyecto, se aprovechó de las ventajas de la **Inteligencia Artificial** para optimizar el proceso de desarrollo:
+
+- **GitHub Copilot**: Se utilizó para consultas sobre optimización de código, sugerencias de mejores prácticas y ayuda en la escritura de algunas funciones. También fue de gran apoyo en la generacion de pruebas unitarias.
+
+- **ChatGPT**: Se ha utilizado para generar automáticamente este **README.md**, asegurando que la documentación fuera detallada, clara y bien estructurada, con el fin de que fuera fácil de entender para cualquier desarrollador que desee levantar o contribuir al proyecto.
+
+---
+
+## 📂 Estructura de carpetas (simplificada)
+
+```
+src/
+├── app/
+│   └── quote/
+│       ├── application/        # Casos de uso y lógica de dominio
+│       ├── domain/             # Entidades y validadores
+│       ├── infrastructure/     # Conexiones externas (DB, APIs)
+├── auth/                       # Registro, login y seguridad JWT
+├── main.ts                     # Punto de entrada
+.env                            # Archivo de entorno
+jest.config.ts                  # Configuración de pruebas
+```
+
+---
+
+## 🎯 Objetivos cumplidos
+
+- ✅ Aplicación NestJS modular, clara y escalable.
+- ✅ Protección de rutas mediante autenticación JWT.
+- ✅ Persistencia en MongoDB.
+- ✅ Pruebas unitarias configuradas y listas para ejecutarse.
+- ✅ Arquitectura hexagonal y uso de DDD implementados.
+- ✅ Facade utilizado para simplificar interacción con el dominio.
+- ✅ IA utilizada para optimización de código y generación de documentación.
+
+---
