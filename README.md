@@ -79,6 +79,24 @@ Ambos endpoints están protegidos mediante autenticación basada en JWT.
 
 ---
 
+## Documentación de la API
+
+La documentación de las APIs está disponible a través de Swagger en la siguiente URL (depende de su configuración de PORT):
+
+[http://localhost:3000/api](http://localhost:3000/api)
+
+Para probar las diferentes APIs, especialmente las relacionadas con "quote", será necesario que te registres y utilices el token de autenticación. Puedes hacer esto directamente en Swagger.
+
+### Autenticación
+
+1. Haz clic en el botón **Authorize** en la parte superior derecha de la interfaz de Swagger.
+2. Ingresa el valor de tu **token JWT** en el campo de texto, **sin incluir la palabra "Bearer"**. Solo debes ingresar el valor del token.
+3. Después de autorizar, podrás realizar las solicitudes autenticadas que requieren este token.
+
+¡Listo! Ahora puedes interactuar con los endpoints que requieren autenticación.
+
+---
+
 ## 🧪 Testing
 
 - ✅ Las pruebas unitarias cubren los **casos de uso del dominio (Facade)**.

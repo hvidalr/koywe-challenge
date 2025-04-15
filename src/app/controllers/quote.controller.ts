@@ -1,6 +1,6 @@
 import { Controller, Post, Body, Get, UseGuards, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { QuoteCreatorFacade } from 'src/context/quote/application/quote-creator.facade';
 import { ConvertCurrencyDto } from '../middlewares/dto/convert-currency.dto';
 import { QuoteGetterFacade } from 'src/context/quote/application/quote-getter.facade';
@@ -14,12 +14,14 @@ export class QuoteController {
     private readonly quoteGetterFacade: QuoteGetterFacade,
   ) {}
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Post('/')
   async createQuote(@Body() {from, to, amount}: ConvertCurrencyDto): Promise<Quote> {
     return this.quoteCreatorFacade.run(from, to, amount);
   }
 
+  @ApiBearerAuth()
   @UseGuards(AuthGuard('jwt'))
   @Get(':id')
   async getQuote(@Param('id') id: string): Promise<Quote> {
